@@ -50,6 +50,12 @@ const start = () => {
       case 'Update Employee Manager':
         updateManager();
         break;
+      case 'Delete Department':
+        deleteDept();
+        break;
+      case 'Delete Role':
+        deleteRole();
+        break;
       case 'Delete Employee':
         deleteEmployee();
         break;
@@ -336,6 +342,78 @@ const deleteEmployee = () => {
       })
       console.log(`Deleted ${res.employee} from the database`);
       viewEmployee();
+    });
+  });
+}
+const deleteRole = () => {
+  connection.query('SELECT * FROM roles;', (err, res) => {
+    if (err) throw err;
+    let rolesArr = [];
+    for (let i = 0; i < res.length; i++) {
+      rolesArr.push(res[i]);
+    }
+    inquirer.prompt({
+      name: 'role',
+      type: 'list',
+      message: "Which role do you want to delete?",
+      choices: function () {
+        let arr = []
+        if (res.length > 0) {
+          for (let i = 0; i < rolesArr.length; i++) {
+            arr.push(rolesArr[i].title);
+          }
+        }
+        return arr;
+      }
+    }).then(res => {
+      let id;
+      for (let i = 0; i < rolesArr.length; i++) {
+        if (res.role === rolesArr[i].title) {
+          id = rolesArr[i].id;
+        }
+      }
+      const query = "DELETE FROM roles WHERE ?;";
+      connection.query(query, {id}, err => {
+        if (err) throw err;
+      })
+      console.log(`Deleted ${res.role} from the database`);
+      viewRole();
+    });
+  });
+}
+const deleteDept = () => {
+  connection.query('SELECT * FROM departments;', (err, res) => {
+    if (err) throw err;
+    let deptArr = [];
+    for (let i = 0; i < res.length; i++) {
+      deptArr.push(res[i]);
+    }
+    inquirer.prompt({
+      name: 'department',
+      type: 'list',
+      message: "Which department do you want to delete?",
+      choices: function () {
+        let arr = []
+        if (res.length > 0) {
+          for (let i = 0; i < deptArr.length; i++) {
+            arr.push(deptArr[i].name);
+          }
+        }
+        return arr;
+      }
+    }).then(res => {
+      let id;
+      for (let i = 0; i < deptArr.length; i++) {
+        if (res.department === deptArr[i].name) {
+          id = deptArr[i].id;
+        }
+      }
+      const query = "DELETE FROM departments WHERE ?;";
+      connection.query(query, {id}, err => {
+        if (err) throw err;
+      })
+      console.log(`Deleted ${res.department} from the database`);
+      viewDept();
     });
   });
 }
