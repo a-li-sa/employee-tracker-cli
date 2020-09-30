@@ -18,7 +18,7 @@ const start = () => {
       name: 'todo',
       type: 'list',
       message: 'What would you like to do?',
-      choices: ['Add Department', 'Add Role', 'Add Employee', 'View All Departments', 'View All Roles', 'View All Employees', 'Update Employee Roles']
+      choices: ['Add Department', 'Add Role', 'Add Employee', 'View All Departments', 'View All Roles', 'View All Employees', 'Update Employee Role']
     }
   ]).then(ans => {
     switch (ans.todo) {
@@ -41,6 +41,7 @@ const start = () => {
         viewEmployee();
         break;
       case 'Update Employee Role':
+        updateRole();
         break;
     }
   })
@@ -118,7 +119,7 @@ const addEmployee = () => {
             role_id = rolesArr[i].id;
           }
         }
-        connection.query('SELECT * FROM employees ;', (err, res) => {
+        connection.query('SELECT * FROM employees;', (err, res) => {
           if (err) throw err;
           let employeeArr = [];
           for (let i = 0; i < res.length; i++) {
@@ -174,4 +175,63 @@ const viewEmployee = () => {
     console.table(res);
     start();
   })
+}
+const updateRole = () => {
+  connection.query('SELECT * FROM employees;', (err, res) => {
+    if (err) throw err;
+    let employeeArr = [];
+    for (let i = 0; i < res.length; i++) {
+      employeeArr.push(res[i]);
+    }
+    inquirer.prompt({
+      name: 'employee',
+      type: 'list',
+      message: "Which employee's role do you want to update?",
+      choices: function () {
+        let arr = ['None']
+        if (res.length > 0) {
+          for (let i = 0; i < employeeArr.length; i++) {
+            arr.push(`${employeeArr[i].first_name} ${employeeArr[i].last_name}`);
+          }
+        }
+        return arr;
+      }
+    }).then(res => {
+      let id;
+      for (let i = 0; i < employeeArr.length; i++) {
+        if (res.employee === `${employeeArr[i].first_name} ${employeeArr[i].last_name}`) {
+          id = employeeArr[i].id;
+        }
+      }
+      connection.query('SELECT * FROM roles ;', (err, res) => {
+        if (err) throw err;
+        let rolesArr = [];
+        for (let i = 0; i < res.length; i++) {
+          rolesArr.push(res[i]);
+        }
+        inquirer.prompt(
+          {
+            name: 'role',
+            type: 'list',
+            message: "What is the selected employee's updated role?",
+            choices: function () {
+              return res.map(res => res.title);
+            }
+          }
+        ).then((res) => {
+          let role_id;
+          for (let i = 0; i < rolesArr.length; i++) {
+            if (res.role === rolesArr[i].title) {
+              role_id = rolesArr[i].id;
+            }
+          }
+          const query = "UPDATE employees SET ? WHERE ?;";
+          connection.query(query, [{role_id}, {id}], err => {
+            if (err) throw err;
+          })
+          viewEmployee();
+        });
+      });
+    });
+  });
 }
