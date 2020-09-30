@@ -50,6 +50,9 @@ const start = () => {
       case 'Update Employee Manager':
         updateManager();
         break;
+      case 'Delete Employee':
+        deleteEmployee();
+        break;
       default:
         start();
         break;
@@ -296,6 +299,42 @@ const updateManager = () => {
       connection.query(query, [{manager_id}, {id}], err => {
         if (err) throw err;
       })
+      viewEmployee();
+    });
+  });
+}
+const deleteEmployee = () => {
+  connection.query('SELECT * FROM employees;', (err, res) => {
+    if (err) throw err;
+    let employeeArr = [];
+    for (let i = 0; i < res.length; i++) {
+      employeeArr.push(res[i]);
+    }
+    inquirer.prompt({
+      name: 'employee',
+      type: 'list',
+      message: "Which employee do you want to delete?",
+      choices: function () {
+        let arr = []
+        if (res.length > 0) {
+          for (let i = 0; i < employeeArr.length; i++) {
+            arr.push(`${employeeArr[i].first_name} ${employeeArr[i].last_name}`);
+          }
+        }
+        return arr;
+      }
+    }).then(res => {
+      let id;
+      for (let i = 0; i < employeeArr.length; i++) {
+        if (res.employee === `${employeeArr[i].first_name} ${employeeArr[i].last_name}`) {
+          id = employeeArr[i].id;
+        }
+      }
+      const query = "DELETE FROM employees WHERE ?;";
+      connection.query(query, {id}, err => {
+        if (err) throw err;
+      })
+      console.log(`Deleted ${res.employee} from the database`);
       viewEmployee();
     });
   });
