@@ -4,7 +4,13 @@ const insertEmployees = 'INSERT INTO employees SET ?;';
 
 const selectDepts = 'SELECT * FROM departments;';
 const selectRoles = 'SELECT * FROM roles;';
-const selectEmployees = 'SELECT * FROM employees;';
+const selectEmployees = `SELECT a.id, a.first_name, a.last_name, B.title, C.name AS department, B.salary, concat(D.first_name, ' ', D.last_name) AS manager FROM employees A
+LEFT JOIN roles B
+ON A.role_id = B.id
+LEFT JOIN departments C
+ON B.department_id = C.id
+LEFT JOIN employees D
+ON A.manager_id = D.id;`;
 
 const updateEmployees = 'UPDATE employees SET ? WHERE ?;';
 

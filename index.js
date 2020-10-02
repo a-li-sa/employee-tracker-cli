@@ -1,25 +1,7 @@
 const inquirer = require('inquirer');
 const { connection } = require('./config/connection');
-
-const {
-  insertDepts,
-  insertRoles,
-  insertEmployees,
-  selectDepts,
-  selectRoles,
-  selectEmployees,
-  updateEmployees,
-  deleteDepts,
-  deleteRoles,
-  deleteEmployees,
-} = require('./model/queries');
-
-const {
-  startPrompt,
-  addDeptPrompt,
-  addRolePrompt,
-  addEmployeePrompt,
-} = require('./model/prompts');
+const { insertDepts, insertRoles, insertEmployees, selectDepts, selectRoles, selectEmployees, updateEmployees, deleteDepts, deleteRoles, deleteEmployees } = require('./model/queries');
+const { startPrompt, addDeptPrompt, addRolePrompt, addEmployeePrompt } = require('./model/prompts');
 
 connection.connect(function(err) {
   if (err) throw err;
