@@ -13,6 +13,7 @@ LEFT JOIN employees D
 ON A.manager_id = D.id;`;
 
 const updateEmployees = 'UPDATE employees SET ? WHERE ?;';
+const selectManager = 'SELECT * FROM employees WHERE manager_id IS NULL;';
 
 const deleteDepts = 'DELETE FROM departments WHERE ?;';
 const deleteRoles = 'DELETE FROM roles WHERE ?;';
@@ -26,6 +27,7 @@ module.exports = {
   selectRoles,
   selectEmployees,
   updateEmployees,
+  selectManager,
   deleteDepts,
   deleteRoles,
   deleteEmployees,

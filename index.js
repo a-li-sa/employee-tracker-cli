@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const { connection } = require('./config/connection');
-const { insertDepts, insertRoles, insertEmployees, selectDepts, selectRoles, selectEmployees, updateEmployees, deleteDepts, deleteRoles, deleteEmployees } = require('./model/queries');
+const { insertDepts, insertRoles, insertEmployees, selectDepts, selectRoles, selectEmployees, updateEmployees, selectManager, deleteDepts, deleteRoles, deleteEmployees } = require('./model/queries');
 const { startPrompt, addDeptPrompt, addRolePrompt, addEmployeePrompt } = require('./model/prompts');
 
 connection.connect(function(err) {
@@ -34,6 +34,9 @@ const start = () => {
         break;
       case 'Update Employee Manager':
         updateManager();
+        break;
+      case 'View Employees By Manager':
+        viewByManager();
         break;
       case 'Delete Department':
         deleteDept();
@@ -258,6 +261,56 @@ const updateManager = () => {
     });
   });
 }
+
+const viewByManager = () => {
+  connection.query(selectManager, (err, res) => {
+    if (err) throw err;
+    let managerArr = [];
+    for (let i = 0; i < res.length; i++) {
+      managerArr.push(res[i]);
+    }
+    inquirer.prompt([
+      {
+        name: 'manager',
+        type: 'list',
+        message: "Pick a manager to view their employees",
+        choices: function () {
+          let arr = []
+          if (res.length > 0) {
+            for (let i = 0; i < managerArr.length; i++) {
+              arr.push(`${managerArr[i].first_name} ${managerArr[i].last_name}`);
+            }
+          }
+          return arr;
+        }
+      }
+    ]).then(res => {
+      let manager_id;
+      for (let i = 0; i < managerArr.length; i++) {
+        if (res.manager === `${managerArr[i].first_name} ${managerArr[i].last_name}`) {
+          manager_id = managerArr[i].id;
+        }
+      }
+      connection.query(`SELECT DISTINCT C.id, a.id, a.first_name, a.last_name, B.title, C.name AS department, B.salary, concat(D.first_name, ' ', D.last_name) AS manager FROM employee_trackerDB.employees A
+LEFT JOIN employee_trackerDB.roles B
+ON A.role_id = B.id
+LEFT JOIN employee_trackerDB.departments C
+ON B.department_id = C.id
+LEFT JOIN employee_trackerDB.employees D
+ON A.manager_id = D.id
+WHERE A.manager_id = ${manager_id};`, (err, res) => {
+        if (err) throw err;
+        if (Object.keys(res).length !== 0) {
+          console.table(res);
+        } else {
+          console.log('The manager you have selected does not have any employees working under them.');
+        }
+        start();
+      })
+    });
+  })
+}
+
 const deleteDept = () => {
   connection.query(selectDepts, (err, res) => {
     if (err) throw err;
@@ -393,7 +446,9 @@ LEFT JOIN employee_trackerDB.departments C
 ON B.department_id = C.id 
 WHERE C.name = '${res.dept}';`, (err,res) => {
         if (err) throw err;
-        console.table(res);
+        if (Object.keys(res).length !== 0) {
+          console.table(res);
+        }
       })
       connection.query(`SELECT C.name, sum(B.salary) AS total
 FROM employee_trackerDB.employees A 

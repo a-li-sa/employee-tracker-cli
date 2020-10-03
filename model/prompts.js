@@ -2,7 +2,7 @@ const startPrompt = {
   name: 'todo',
   type: 'list',
   message: 'What would you like to do?',
-  choices: ['Add Department', 'Add Role', 'Add Employee', 'View All Departments', 'View All Roles', 'View All Employees', 'Update Employee Role', 'Update Employee Manager', 'Delete Department', 'Delete Role', 'Delete Employee', 'View the total utilized budget of a department']
+  choices: ['Add Department', 'Add Role', 'Add Employee', 'View All Departments', 'View All Roles', 'View All Employees', 'Update Employee Role', 'Update Employee Manager', 'View Employees By Manager', 'Delete Department', 'Delete Role', 'Delete Employee', 'View the total utilized budget of a department']
 };
 
 const addDeptPrompt = {
