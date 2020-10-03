@@ -1,14 +1,33 @@
 const inquirer = require('inquirer');
-function isNotBlank(input) {
-  return input !== '' || "Cannot leave blank";
-}
 
 const startPrompt = {
   name: 'todo',
   type: 'list',
   message: 'What would you like to do?',
-  choices: [new inquirer.Separator('─────── Add ───────'), 'Add Department', 'Add Role', 'Add Employee', new inquirer.Separator('─────── View ───────'), 'View All Departments', 'View All Roles', 'View All Employees', 'View Employees by Manager', 'View the Total Utilized Budget of a Department', new inquirer.Separator('─────── Update ───────'), 'Update Employee Role', 'Update Employee Manager', new inquirer.Separator('─────── Delete ───────'), 'Delete Department', 'Delete Role', 'Delete Employee' ]
+  choices: [
+    new inquirer.Separator('───────────────────── Add ──────────────────────'),
+    'Add Department',
+    'Add Role',
+    'Add Employee',
+    new inquirer.Separator('───────────────────── View ─────────────────────'),
+    'View All Departments',
+    'View All Roles',
+    'View All Employees',
+    'View Employees by Manager',
+    'View the Total Utilized Budget of a Department',
+    new inquirer.Separator('──────────────────── Update ────────────────────'),
+    'Update Employee Role',
+    'Update Employee Manager',
+    new inquirer.Separator('──────────────────── Delete ────────────────────'),
+    'Delete Department',
+    'Delete Role',
+    'Delete Employee'
+  ]
 };
+
+function isNotBlank(input) {
+  return input !== '' || "Cannot leave blank";
+}
 
 const addDeptPrompt = {
   name: 'name',
