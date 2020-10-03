@@ -44,6 +44,9 @@ const start = () => {
       case 'Delete Employee':
         deleteEmployee();
         break;
+      case 'View the total utilized budget of a department':
+        deptBudget();
+        break;
       default:
         start();
         break;
@@ -359,4 +362,54 @@ const deleteEmployee = () => {
       viewEmployee();
     });
   });
+}
+
+const deptBudget = () => {
+  connection.query(selectDepts, (err, res) => {
+    if (err) throw err;
+    let deptArr = [];
+    for (let i = 0; i < res.length; i++) {
+      deptArr.push(res[i]);
+    }
+    inquirer.prompt({
+      name: 'dept',
+      type: 'list',
+      message: "Choose a department to view its total utilized budget -- ie the combined salaries of all employees in that department",
+      choices: function () {
+        let arr = []
+        if (res.length > 0) {
+          for (let i = 0; i < deptArr.length; i++) {
+            arr.push(deptArr[i].name);
+          }
+        }
+        return arr;
+      }
+    }).then(res => {
+      connection.query(`SELECT A.id, A.first_name, A.last_name, B.title, B.salary 
+FROM employee_trackerDB.employees A 
+LEFT JOIN employee_trackerDB.roles B 
+ON A.role_id = B.id 
+LEFT JOIN employee_trackerDB.departments C 
+ON B.department_id = C.id 
+WHERE C.name = '${res.dept}';`, (err,res) => {
+        if (err) throw err;
+        console.table(res);
+      })
+      connection.query(`SELECT C.name, sum(B.salary) AS total
+FROM employee_trackerDB.employees A 
+LEFT JOIN employee_trackerDB.roles B 
+ON A.role_id = B.id 
+LEFT JOIN employee_trackerDB.departments C 
+ON B.department_id = C.id 
+WHERE C.name = '${res.dept}';`, (err,res) => {
+        if (err) throw err;
+        if (res[0].total !== null) {
+          console.log( `The total utilized budget of the ${res[0].name} department is $${res[0].total.toFixed(2)}.`);
+        } else {
+          console.log( `The total utilized budget of the ${res[0].name} department is $0.00`);
+        }
+        start();
+      })
+    })
+  })
 }
