@@ -21,7 +21,9 @@ const startPrompt = {
     new inquirer.Separator('──────────────────── Delete ────────────────────'),
     'Delete Department',
     'Delete Role',
-    'Delete Employee'
+    'Delete Employee',
+    new inquirer.Separator('───────────────────── Quit ─────────────────────'),
+    'Quit Node'
   ]
 };
 

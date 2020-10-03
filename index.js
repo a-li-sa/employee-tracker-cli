@@ -51,8 +51,7 @@ const start = () => {
         deptBudget();
         break;
       default:
-        start();
-        break;
+        return process.exit(22);
     }
   })
 }
@@ -62,7 +61,7 @@ const addDept = () => {
     connection.query(insertDepts, {name}, err => {
       if (err) throw err;
     });
-    console.log(`Added ${name} to the database.`);
+    console.log(`Added ${name} department to the database.`);
     start();
   })
 }
@@ -71,7 +70,7 @@ const addRole = () => {
     connection.query(insertRoles, {title, salary, department_id}, err => {
       if (err) throw err;
     });
-    console.log(`Added ${title} to the database.`);
+    console.log(`Added ${title} role to the database.`);
     start();
   })
 }
@@ -129,7 +128,7 @@ const addEmployee = () => {
           connection.query(insertEmployees, {first_name, last_name, role_id, manager_id}, err => {
             if (err) throw err;
           });
-          console.log(`Added ${first_name} ${last_name} to the database.`);
+          console.log(`Added employee ${first_name} ${last_name} to the database.`);
           start();
         });
       });
@@ -215,7 +214,7 @@ const updateRole = () => {
           connection.query(updateEmployees, [{role_id}, {id}], err => {
             if (err) throw err;
           })
-          console.log(`${first_name} ${last_name}'s role has been updated to ${res.role}.`)
+          console.log(`${first_name} ${last_name}'s role has been updated to "${res.role}".`);
           start();
         });
       });
@@ -313,7 +312,7 @@ WHERE A.manager_id = ${manager_id};`, (err, res) => {
         if (Object.keys(res).length !== 0) {
           console.table(res);
         } else {
-          console.log('The manager you have selected does not have any employees working under them.');
+          console.log('The manager you have selected currently does not have any employees working under them.');
         }
         start();
       })
@@ -351,7 +350,7 @@ const deleteDept = () => {
       connection.query(deleteDepts, {id}, err => {
         if (err) throw err;
       })
-      console.log(`Deleted the ${res.department} department from the database`);
+      console.log(`Deleted the ${res.department} department from the database.`);
       start();
     });
   });
@@ -386,7 +385,7 @@ const deleteRole = () => {
       connection.query(deleteRoles, {id}, err => {
         if (err) throw err;
       })
-      console.log(`Deleted the role of ${res.role} from the database`);
+      console.log(`Deleted the role of ${res.role} from the database.`);
       start();
     });
   });
@@ -421,7 +420,7 @@ const deleteEmployee = () => {
       connection.query(deleteEmployees, {id}, err => {
         if (err) throw err;
       })
-      console.log(`Deleted employee ${res.employee} from the database`);
+      console.log(`Deleted employee ${res.employee} from the database.`);
       start();
     });
   });
@@ -437,7 +436,7 @@ const deptBudget = () => {
     inquirer.prompt({
       name: 'dept',
       type: 'list',
-      message: "Choose a department to view its total utilized budget -- ie the combined salaries of all employees in that department",
+      message: "Choose a department to view its total utilized budget -- i.e. the combined salaries of all employees in that department.",
       choices: function () {
         let arr = []
         if (res.length > 0) {
@@ -471,7 +470,7 @@ WHERE C.name = '${res.dept}';`, (err,res) => {
         if (res[0].total !== null) {
           console.log( `The total utilized budget of the ${res[0].name} department is $${res[0].total.toFixed(2)}.`);
         } else {
-          console.log( `The total utilized budget of the ${res[0].name} department is $0.00`);
+          console.log( `The total utilized budget of the ${res[0].name} department is $0.00.`);
         }
         start();
       })
