@@ -35,7 +35,7 @@ const start = () => {
       case 'Update Employee Manager':
         updateManager();
         break;
-      case 'View Employees By Manager':
+      case 'View Employees by Manager':
         viewByManager();
         break;
       case 'Delete Department':
@@ -47,7 +47,7 @@ const start = () => {
       case 'Delete Employee':
         deleteEmployee();
         break;
-      case 'View the total utilized budget of a department':
+      case 'View the Total Utilized Budget of a Department':
         deptBudget();
         break;
       default:
@@ -273,7 +273,7 @@ const viewByManager = () => {
       {
         name: 'manager',
         type: 'list',
-        message: "Pick a manager to view their employees",
+        message: "Pick a manager to view their employees.",
         choices: function () {
           let arr = []
           if (res.length > 0) {
