@@ -13,11 +13,26 @@ LEFT JOIN employees D
 ON A.manager_id = D.id;`;
 
 const updateEmployees = 'UPDATE employees SET ? WHERE ?;';
-const selectManager = 'SELECT * FROM employees WHERE manager_id IS NULL;';
 
 const deleteDepts = 'DELETE FROM departments WHERE ?;';
 const deleteRoles = 'DELETE FROM roles WHERE ?;';
 const deleteEmployees = 'DELETE FROM employees WHERE ?;';
+
+const selectSum = `SELECT C.name, sum(B.salary) AS total
+FROM employee_trackerDB.employees A 
+LEFT JOIN employee_trackerDB.roles B 
+ON A.role_id = B.id 
+LEFT JOIN employee_trackerDB.departments C 
+ON B.department_id = C.id 
+WHERE C.name = ?;`
+
+const selectBudget = `SELECT A.id, A.first_name, A.last_name, B.title, B.salary 
+FROM employee_trackerDB.employees A 
+LEFT JOIN employee_trackerDB.roles B 
+ON A.role_id = B.id 
+LEFT JOIN employee_trackerDB.departments C 
+ON B.department_id = C.id 
+WHERE C.name = ?;`
 
 module.exports = {
   insertDepts,
@@ -27,8 +42,9 @@ module.exports = {
   selectRoles,
   selectEmployees,
   updateEmployees,
-  selectManager,
   deleteDepts,
   deleteRoles,
   deleteEmployees,
+  selectSum,
+  selectBudget,
 }

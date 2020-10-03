@@ -22,8 +22,8 @@ const startPrompt = {
     'Delete Department',
     'Delete Role',
     'Delete Employee',
-    new inquirer.Separator('───────────────────── Quit ─────────────────────'),
-    'Quit Node'
+    new inquirer.Separator('───────────────────── Exit ─────────────────────'),
+    'Exit Node.js'
   ]
 };
 

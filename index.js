@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const { connection } = require('./config/connection');
-const { insertDepts, insertRoles, insertEmployees, selectDepts, selectRoles, selectEmployees, updateEmployees, selectManager, deleteDepts, deleteRoles, deleteEmployees } = require('./model/queries');
+const { insertDepts, insertRoles, insertEmployees, selectDepts, selectRoles, selectEmployees, updateEmployees, deleteDepts, deleteRoles, deleteEmployees, selectSum, selectBudget } = require('./model/queries');
 const { startPrompt, addDeptPrompt, addRolePrompt, addEmployeePrompt } = require('./model/prompts');
 
 connection.connect(function(err) {
@@ -272,22 +272,22 @@ const updateManager = () => {
 }
 
 const viewByManager = () => {
-  connection.query(selectManager, (err, res) => {
+  connection.query(selectEmployees, (err, res) => {
     if (err) throw err;
-    let managerArr = [];
+    let employeeArr = [];
     for (let i = 0; i < res.length; i++) {
-      managerArr.push(res[i]);
+      employeeArr.push(res[i]);
     }
     inquirer.prompt([
       {
-        name: 'manager',
+        name: 'employee',
         type: 'list',
-        message: "Pick a manager to view their employees.",
+        message: "Pick an employee to see who they manage.",
         choices: function () {
           let arr = []
           if (res.length > 0) {
-            for (let i = 0; i < managerArr.length; i++) {
-              arr.push(`${managerArr[i].first_name} ${managerArr[i].last_name}`);
+            for (let i = 0; i < employeeArr.length; i++) {
+              arr.push(`${employeeArr[i].first_name} ${employeeArr[i].last_name}`);
             }
           }
           return arr;
@@ -295,9 +295,9 @@ const viewByManager = () => {
       }
     ]).then(res => {
       let manager_id;
-      for (let i = 0; i < managerArr.length; i++) {
-        if (res.manager === `${managerArr[i].first_name} ${managerArr[i].last_name}`) {
-          manager_id = managerArr[i].id;
+      for (let i = 0; i < employeeArr.length; i++) {
+        if (res.employee === `${employeeArr[i].first_name} ${employeeArr[i].last_name}`) {
+          manager_id = employeeArr[i].id;
         }
       }
       connection.query(`SELECT DISTINCT C.id, a.id, a.first_name, a.last_name, B.title, C.name AS department, B.salary, concat(D.first_name, ' ', D.last_name) AS manager FROM employee_trackerDB.employees A
@@ -312,7 +312,7 @@ WHERE A.manager_id = ${manager_id};`, (err, res) => {
         if (Object.keys(res).length !== 0) {
           console.table(res);
         } else {
-          console.log('The manager you have selected currently does not have any employees working under them.');
+          console.log('The person you have selected currently does not have any employees working under them.');
         }
         start();
       })
@@ -447,25 +447,13 @@ const deptBudget = () => {
         return arr;
       }
     }).then(res => {
-      connection.query(`SELECT A.id, A.first_name, A.last_name, B.title, B.salary 
-FROM employee_trackerDB.employees A 
-LEFT JOIN employee_trackerDB.roles B 
-ON A.role_id = B.id 
-LEFT JOIN employee_trackerDB.departments C 
-ON B.department_id = C.id 
-WHERE C.name = '${res.dept}';`, (err,res) => {
+      connection.query(selectBudget, res.dept, (err,res) => {
         if (err) throw err;
         if (Object.keys(res).length !== 0) {
           console.table(res);
         }
       })
-      connection.query(`SELECT C.name, sum(B.salary) AS total
-FROM employee_trackerDB.employees A 
-LEFT JOIN employee_trackerDB.roles B 
-ON A.role_id = B.id 
-LEFT JOIN employee_trackerDB.departments C 
-ON B.department_id = C.id 
-WHERE C.name = '${res.dept}';`, (err,res) => {
+      connection.query(selectSum, res.dept, (err,res) => {
         if (err) throw err;
         if (res[0].total !== null) {
           console.log( `The total utilized budget of the ${res[0].name} department is $${res[0].total.toFixed(2)}.`);
