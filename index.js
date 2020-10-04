@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const { connection } = require('./config/connection');
-const { insertDepts, insertRoles, insertEmployees, selectDepts, selectRoles, selectEmployees, updateEmployees, deleteDepts, deleteRoles, deleteEmployees, selectSum, selectBudget } = require('./model/queries');
+const { insertDepts, insertRoles, insertEmployees, selectDepts, selectRoles, selectEmployees, updateEmployees, deleteDepts, deleteRoles, deleteEmployees, selectSum, selectBudget, selectEmployeeByManager } = require('./model/queries');
 const { startPrompt, addDeptPrompt, addRolePrompt, addEmployeePrompt } = require('./model/prompts');
 
 connection.connect(function(err) {
@@ -9,7 +9,7 @@ connection.connect(function(err) {
 });
 
 const start = () => {
-  inquirer.prompt(startPrompt).then(ans => {
+  inquirer.prompt(startPrompt).then( ans => {
     switch (ans.todo) {
       case 'Add Department':
         addDept();
@@ -51,7 +51,8 @@ const start = () => {
         deptBudget();
         break;
       default:
-        return process.exit(22);
+        process.exit(22);
+        break;
     }
   })
 }
@@ -300,14 +301,7 @@ const viewByManager = () => {
           manager_id = employeeArr[i].id;
         }
       }
-      connection.query(`SELECT DISTINCT C.id, a.id, a.first_name, a.last_name, B.title, C.name AS department, B.salary, concat(D.first_name, ' ', D.last_name) AS manager FROM employee_trackerDB.employees A
-LEFT JOIN employee_trackerDB.roles B
-ON A.role_id = B.id
-LEFT JOIN employee_trackerDB.departments C
-ON B.department_id = C.id
-LEFT JOIN employee_trackerDB.employees D
-ON A.manager_id = D.id
-WHERE A.manager_id = ${manager_id};`, (err, res) => {
+      connection.query(selectEmployeeByManager, manager_id,(err, res) => {
         if (err) throw err;
         if (Object.keys(res).length !== 0) {
           console.table(res);
