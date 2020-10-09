@@ -4,7 +4,7 @@
 
 Built with Node.js and MySQL
 
-* URL of the GitHub repository: https://github.com/a-li-sa/employee-tracker-cli
+URL of the GitHub repository: https://github.com/a-li-sa/employee-tracker-cli
 
 </div>
 
@@ -19,7 +19,7 @@ Built with Node.js and MySQL
 
 ## Description
 
-This command line application makes it easy for non-developers to view and interact with information stored in their database. 
+This command line application makes it easy for non-developers to view and interact with information stored in their database. The user can easily view and manage the departments, roles, and employees in their company.
 
 ### User Story
 
@@ -57,7 +57,7 @@ This [video](https://www.youtube.com/watch?v=IDFTntj2rJE&feature=youtu.be) demon
 ## Built With
 
 * [Node.js](https://nodejs.org/en/) - An open-source JavaScript runtime environment that executes JavaScript outside of the browser. 
-* [MySQL](https://www.mysql.com/) - A database system that runs on a server
+* [MySQL](https://www.mysql.com/) - A database management system that is based on SQL – Structured Query Language.
 
 ## License
 
